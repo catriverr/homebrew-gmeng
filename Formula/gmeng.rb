@@ -57,7 +57,7 @@ class Gmeng < Formula
     EOS
 
     flags = shell_output("pkg-config --cflags --libs gmeng").strip.split
-    system g++, "test.cpp", *flags, "-o", "test"
+    system "g++", "test.cpp", *flags, "-o", "test"
     system "./test"
   end
 end
