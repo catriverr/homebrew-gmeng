@@ -1,22 +1,21 @@
 class Gmeng < Formula
-  desc "DevKit & Source for Gmeng - the game engine."
+  desc "DevKit & Source for Gmeng - the game engine"
   homepage "https://gmeng.org"
 
   url "https://github.com/catriverr/gmeng-sdk.git",
-    tag: "12.0.0",
+    tag:      "12.0.0",
     revision: "35b8ec093d7f9971a70ec1b3579a31bcba82557e"
   version "12.0.0"
   license "Zlib"
 
-  depends_on "ruby"
-  depends_on "pkg-config"
   depends_on "curl"
   depends_on "ncurses"
+  depends_on "pkg-config"
+  depends_on "ruby"
   depends_on "sdl2"
-  depends_on "sdl2_ttf"
   depends_on "sdl2_image"
-  depends_on "lua" ["5.4"]
-
+  depends_on "sdl2_ttf"
+  depends_on "lua@5.4"
 
   def install
     (include/"gmeng").install "lib"
@@ -27,15 +26,30 @@ class Gmeng < Formula
     (include/"gmeng").install "makefile"
     engine_cflags = "-Wno-writable-strings -Wno-format-security -Wno-deprecated-declarations --std=c++2a -pthread -L#{prefix}/include -I#{prefix}/include -L#{prefix}/include/asio -I#{prefix}/include/asio -fpermissive"
 
+    ncurses_pc = "#{Formula["ncurses"].opt_lib}/pkgconfig"
+    curl_pc    = "#{Formula["curl"].opt_lib}/pkgconfig"
+    lua_pc     = "#{Formula["lua@5.4"].opt_lib}/pkgconfig"
+
+    keg_paths = "#{ncurses_pc}:#{curl_pc}:#{lua_pc}"
+
+    ncurses_cflags = Utils.safe_popen_read({"PKG_CONFIG_PATH" => keg_paths}, "pkg-config", "--cflags", "ncursesw").chomp
+    ncurses_libs   = Utils.safe_popen_read({"PKG_CONFIG_PATH" => keg_paths}, "pkg-config", "--libs", "ncursesw").chomp
+
+    lua_cflags     = Utils.safe_popen_read({"PKG_CONFIG_PATH" => keg_paths}, "pkg-config", "--cflags", "lua-5.4").chomp
+    lua_libs       = Utils.safe_popen_read({"PKG_CONFIG_PATH" => keg_paths}, "pkg-config", "--libs", "lua-5.4").chomp
+
+    curl_cflags    = Utils.safe_popen_read({"PKG_CONFIG_PATH" => keg_paths}, "pkg-config", "--cflags", "libcurl").chomp
+    curl_libs      = Utils.safe_popen_read({"PKG_CONFIG_PATH" => keg_paths}, "pkg-config", "--libs", "libcurl").chomp
+
     (buildpath/"gmeng.pc").write <<~EOS
       prefix=#{prefix}
 
       Name: gmeng
       Description: Gmeng Game Engine
       Version: #{version}
-      Requires: ncurses, sdl2, sdl2_ttf, sdl2_image, lua-5.4, libcurl
-      Libs: -L${prefix} -L${prefix}/lib/bin
-      Cflags: -I${prefix} -I${prefix}/lib/bin #{engine_cflags}
+      Requires: sdl2, sdl2_ttf, sdl2_image
+      Libs: -L${prefix} -L${prefix}/lib/bin #{ncurses_libs} #{lua_libs} #{curl_libs}
+      Cflags: -I${prefix} -I${prefix}/lib/bin #{ncurses_cflags} #{lua_cflags} #{curl_cflags} #{engine_cflags}
     EOS
 
     (lib/"pkgconfig").install "gmeng.pc"
@@ -44,9 +58,10 @@ class Gmeng < Formula
   test do
     system "pkg-config", "--exists", "gmeng"
 
-    assert_match "-std=c++20", shell_output("pkg-config --cflags --libs gmeng")
+    assert_match "--std=c++2a", shell_output("pkg-config --cflags --libs gmeng")
 
     (testpath/"test.cpp").write <<~EOS
+      #include <iostream>
       #include <gmeng.h>
 
       int main(int argc, char** argv) {
@@ -57,7 +72,7 @@ class Gmeng < Formula
     EOS
 
     flags = shell_output("pkg-config --cflags --libs gmeng").strip.split
-    system "g++", "test.cpp", *flags, "-o", "test"
+    system ENV.cxx, "test.cpp", *flags, "-o", "test"
     system "./test"
   end
 end
