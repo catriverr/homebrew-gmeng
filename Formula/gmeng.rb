@@ -24,7 +24,7 @@ class Gmeng < Formula
     (include/"gmeng").install "assets"
     (include/"gmeng").install "scripts"
     (include/"gmeng").install "makefile"
-    engine_cflags = "-Wno-write-strings -Wno-literal-suffix -Wno-switch-bool -Wno-literal-suffix -Wno-writable-strings -Wno-format-security -Wno-deprecated-declarations --std=c++2a -pthread -L#{prefix}/include -I#{prefix}/include -L#{prefix}/include/asio -I#{prefix}/include/asio -fpermissive"
+    engine_cflags = "-Wnochanges-meaning -Wnounused-result -Wno-write-strings -Wno-literal-suffix -Wno-switch-bool -Wno-literal-suffix -Wno-writable-strings -Wno-format-security -Wno-deprecated-declarations --std=c++2a -pthread -L#{prefix}/include -I#{prefix}/include -L#{prefix}/include/asio -I#{prefix}/include/asio -fpermissive"
 
     (buildpath/"gmeng.pc").write <<~EOS
       prefix=#{prefix}
@@ -33,8 +33,8 @@ class Gmeng < Formula
       Description: Gmeng Game Engine
       Version: #{version}
       Requires: sdl2, sdl2_ttf, sdl2_image, ncursesw, lua-5.4, libcurl
-      Libs: -L${prefix} -L${prefix}/lib/bin
-      Cflags: -framework ApplicationServices -framework AudioUnit -framework CoreAudio -framework AudioToolbox I${prefix} -I${prefix}/lib/bin #{engine_cflags}
+      Libs: -L${prefix}/include -L${prefix} -L${prefix}/lib/bin
+      Cflags: -I${prefix}/include -framework ApplicationServices -framework AudioUnit -framework CoreAudio -framework AudioToolbox I${prefix} -I${prefix}/lib/bin #{engine_cflags}
     EOS
 
     (lib/"pkgconfig").install "gmeng.pc"
