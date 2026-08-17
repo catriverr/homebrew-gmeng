@@ -24,7 +24,7 @@ class Gmeng < Formula
     (include/"gmeng").install "assets"
     (include/"gmeng").install "scripts"
     (include/"gmeng").install "makefile"
-    engine_cflags = "Wno-literal-suffix -Wno-switch-bool -Wno-literal-suffix -Wno-writable-strings -Wno-format-security -Wno-deprecated-declarations --std=c++2a -pthread -L#{prefix}/include -I#{prefix}/include -L#{prefix}/include/asio -I#{prefix}/include/asio -fpermissive"
+    engine_cflags = "-Wno-write-strings -Wno-literal-suffix -Wno-switch-bool -Wno-literal-suffix -Wno-writable-strings -Wno-format-security -Wno-deprecated-declarations --std=c++2a -pthread -L#{prefix}/include -I#{prefix}/include -L#{prefix}/include/asio -I#{prefix}/include/asio -fpermissive"
 
     (buildpath/"gmeng.pc").write <<~EOS
       prefix=#{prefix}
