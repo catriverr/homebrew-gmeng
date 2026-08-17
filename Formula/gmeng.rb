@@ -33,7 +33,7 @@ class Gmeng < Formula
       Name: gmeng
       Description: Gmeng Game Engine
       Version: #{version}
-      Requires: ncurses, sdl2, sdl2_ttf, sdl2_image, lua-5.4, curl
+      Requires: ncurses, sdl2, sdl2_ttf, sdl2_image, lua-5.4, libcurl
       Libs: -L${prefix} -L${prefix}/lib/bin
       Cflags: -I${prefix} -I${prefix}/lib/bin #{engine_cflags}
     EOS
