@@ -34,7 +34,7 @@ class Gmeng < Formula
       Version: #{version}
       Requires: sdl2, sdl2_ttf, sdl2_image, ncursesw, lua-5.4, libcurl
       Libs: -L${prefix} -L${prefix}/lib/bin
-      Cflags: -framework ApplicationServices -framework AudioUnit -framework CoreAudio -framework AudioToolbox I${prefix} -I${prefix}/lib/bin
+      Cflags: -framework ApplicationServices -framework AudioUnit -framework CoreAudio -framework AudioToolbox I${prefix} -I${prefix}/lib/bin #{engine_cflags}
     EOS
 
     (lib/"pkgconfig").install "gmeng.pc"
