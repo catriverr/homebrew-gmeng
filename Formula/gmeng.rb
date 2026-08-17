@@ -18,12 +18,16 @@ class Gmeng < Formula
   depends_on "lua@5.4"
 
   def install
+    include.install "include/*"
     (include/"gmeng").install "lib"
     (include/"gmeng").install "include"
     (include/"gmeng").install "envs"
     (include/"gmeng").install "assets"
     (include/"gmeng").install "scripts"
     (include/"gmeng").install "makefile"
+    (include/"gmeng").install "include/asio"
+    (include/"gmeng").install "lib/bin"
+
     engine_cflags = "-Wno-changes-meaning -Wno-unused-result -Wno-write-strings -Wno-literal-suffix -Wno-switch-bool -Wno-literal-suffix -Wno-writable-strings -Wno-format-security -Wno-deprecated-declarations --std=c++2a -pthread -L#{prefix}/include -I#{prefix}/include -L#{prefix}/include/asio -I#{prefix}/include/asio -fpermissive"
 
     (buildpath/"gmeng.pc").write <<~EOS
