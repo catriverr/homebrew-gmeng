@@ -24,22 +24,7 @@ class Gmeng < Formula
     (include/"gmeng").install "assets"
     (include/"gmeng").install "scripts"
     (include/"gmeng").install "makefile"
-    engine_cflags = "-Wno-writable-strings -Wno-format-security -Wno-deprecated-declarations --std=c++2a -pthread -L#{prefix}/include -I#{prefix}/include -L#{prefix}/include/asio -I#{prefix}/include/asio -fpermissive"
-
-# 1. Temporarily expose the hidden keg-only .pc files to the build environment
-    ENV.prepend_path "PKG_CONFIG_PATH", Formula["ncurses"].opt_lib/"pkgconfig"
-    ENV.prepend_path "PKG_CONFIG_PATH", Formula["curl"].opt_lib/"pkgconfig"
-    ENV.prepend_path "PKG_CONFIG_PATH", Formula["lua@5.4"].opt_lib/"pkgconfig"
-
-    # 2. Now pkg-config can read them perfectly without crashing
-    ncurses_cflags = Utils.safe_popen_read("pkg-config", "--cflags", "ncursesw").chomp
-    ncurses_libs   = Utils.safe_popen_read("pkg-config", "--libs", "ncursesw").chomp
-
-    lua_cflags     = Utils.safe_popen_read("pkg-config", "--cflags", "lua-5.4").chomp
-    lua_libs       = Utils.safe_popen_read("pkg-config", "--libs", "lua-5.4").chomp
-
-    curl_cflags    = Utils.safe_popen_read("pkg-config", "--cflags", "libcurl").chomp
-    curl_libs      = Utils.safe_popen_read("pkg-config", "--libs", "libcurl").chomp
+    engine_cflags = "Wno-literal-suffix -Wno-switch-bool -Wno-literal-suffix -Wno-writable-strings -Wno-format-security -Wno-deprecated-declarations --std=c++2a -pthread -L#{prefix}/include -I#{prefix}/include -L#{prefix}/include/asio -I#{prefix}/include/asio -fpermissive"
 
     (buildpath/"gmeng.pc").write <<~EOS
       prefix=#{prefix}
@@ -47,9 +32,9 @@ class Gmeng < Formula
       Name: gmeng
       Description: Gmeng Game Engine
       Version: #{version}
-      Requires: sdl2, sdl2_ttf, sdl2_image
+      Requires: sdl2, sdl2_ttf, sdl2_image, ncursesw, lua-5.4, libcurl
       Libs: -L${prefix} -L${prefix}/lib/bin #{ncurses_libs} #{lua_libs} #{curl_libs}
-      Cflags: -I${prefix} -I${prefix}/lib/bin #{ncurses_cflags} #{lua_cflags} #{curl_cflags} #{engine_cflags}
+      Cflags: -framework ApplicationServices -framework AudioUnit -framework CoreAudio -framework AudioToolbox I${prefix} -I${prefix}/lib/bin #{ncurses_cflags} #{lua_cflags} #{curl_cflags} #{engine_cflags}
     EOS
 
     (lib/"pkgconfig").install "gmeng.pc"
@@ -62,7 +47,7 @@ class Gmeng < Formula
 
     (testpath/"test.cpp").write <<~EOS
       #include <iostream>
-      #include <gmeng.h>
+      #include <gmeng/gmeng.h>
 
       int main(int argc, char** argv) {
         std::cout << "gmeng.h header imports no error" << std::endl;
