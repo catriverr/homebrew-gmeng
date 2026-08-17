@@ -18,6 +18,7 @@ class Gmeng < Formula
   depends_on "lua@5.4"
 
   def install
+    include.install Dir["include/*"]
     (include/"gmeng").install "lib"
     (include/"gmeng").install "include"
     (include/"gmeng").install "envs"
