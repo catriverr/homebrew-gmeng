@@ -3,9 +3,9 @@ class Gmeng < Formula
   homepage "https://gmeng.org"
 
   url "https://github.com/catriverr/gmeng-sdk.git",
-    tag:      "12.0.0",
-    revision: "35b8ec093d7f9971a70ec1b3579a31bcba82557e"
-  version "12.0.0"
+    tag:      "13.4.0",
+    revision: "d23380c0ca216fc48e9deae82287938e9f232623"
+  version "13.4.0"
   license "Zlib"
 
   depends_on "curl"
@@ -24,8 +24,6 @@ class Gmeng < Formula
     (include/"gmeng").install "assets"
     (include/"gmeng").install "scripts"
     (include/"gmeng").install "makefile"
-    (include/"gmeng").install "include/asio"
-    (include/"gmeng").install "lib/bin"
 
     engine_cflags = "-Wno-changes-meaning -Wno-unused-result -Wno-write-strings -Wno-literal-suffix -Wno-switch-bool -Wno-literal-suffix -Wno-writable-strings -Wno-format-security -Wno-deprecated-declarations --std=c++2a -pthread -L#{prefix}/include -I#{prefix}/include -L#{prefix}/include/asio -I#{prefix}/include/asio -fpermissive"
 
