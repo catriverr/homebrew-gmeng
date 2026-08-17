@@ -26,20 +26,20 @@ class Gmeng < Formula
     (include/"gmeng").install "makefile"
     engine_cflags = "-Wno-writable-strings -Wno-format-security -Wno-deprecated-declarations --std=c++2a -pthread -L#{prefix}/include -I#{prefix}/include -L#{prefix}/include/asio -I#{prefix}/include/asio -fpermissive"
 
-    ncurses_pc = "#{Formula["ncurses"].opt_lib}/pkgconfig"
-    curl_pc    = "#{Formula["curl"].opt_lib}/pkgconfig"
-    lua_pc     = "#{Formula["lua@5.4"].opt_lib}/pkgconfig"
+# 1. Temporarily expose the hidden keg-only .pc files to the build environment
+    ENV.prepend_path "PKG_CONFIG_PATH", Formula["ncurses"].opt_lib/"pkgconfig"
+    ENV.prepend_path "PKG_CONFIG_PATH", Formula["curl"].opt_lib/"pkgconfig"
+    ENV.prepend_path "PKG_CONFIG_PATH", Formula["lua@5.4"].opt_lib/"pkgconfig"
 
-    keg_paths = "#{ncurses_pc}:#{curl_pc}:#{lua_pc}"
+    # 2. Now pkg-config can read them perfectly without crashing
+    ncurses_cflags = Utils.safe_popen_read("pkg-config", "--cflags", "ncursesw").chomp
+    ncurses_libs   = Utils.safe_popen_read("pkg-config", "--libs", "ncursesw").chomp
 
-    ncurses_cflags = Utils.safe_popen_read({"PKG_CONFIG_PATH" => keg_paths}, "pkg-config", "--cflags", "ncursesw").chomp
-    ncurses_libs   = Utils.safe_popen_read({"PKG_CONFIG_PATH" => keg_paths}, "pkg-config", "--libs", "ncursesw").chomp
+    lua_cflags     = Utils.safe_popen_read("pkg-config", "--cflags", "lua-5.4").chomp
+    lua_libs       = Utils.safe_popen_read("pkg-config", "--libs", "lua-5.4").chomp
 
-    lua_cflags     = Utils.safe_popen_read({"PKG_CONFIG_PATH" => keg_paths}, "pkg-config", "--cflags", "lua-5.4").chomp
-    lua_libs       = Utils.safe_popen_read({"PKG_CONFIG_PATH" => keg_paths}, "pkg-config", "--libs", "lua-5.4").chomp
-
-    curl_cflags    = Utils.safe_popen_read({"PKG_CONFIG_PATH" => keg_paths}, "pkg-config", "--cflags", "libcurl").chomp
-    curl_libs      = Utils.safe_popen_read({"PKG_CONFIG_PATH" => keg_paths}, "pkg-config", "--libs", "libcurl").chomp
+    curl_cflags    = Utils.safe_popen_read("pkg-config", "--cflags", "libcurl").chomp
+    curl_libs      = Utils.safe_popen_read("pkg-config", "--libs", "libcurl").chomp
 
     (buildpath/"gmeng.pc").write <<~EOS
       prefix=#{prefix}
